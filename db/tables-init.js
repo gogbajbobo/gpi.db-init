@@ -41,9 +41,7 @@ if (!process.argv[2]) {
 
     dropTableQueries.forEach(queryChaining);
     createTableQueries.forEach(queryChaining);
-
-    queriesPromise = queriesPromise.then(() => fillRolesTableQuery());
-
+    
     queriesPromise
         .then(() => log.info('tables created'))
         .catch(err => log.error(err.message))
@@ -74,6 +72,7 @@ function createTableQuery(tableName) {
     const queries = {
         users: createUsersTableQuery,
         roles: createRolesTableQuery,
+        fillRoles: fillRolesTableQuery,
         users_roles: createUsersRolesTableQuery,
         orders: createOrdersTableQuery
     };
@@ -81,8 +80,14 @@ function createTableQuery(tableName) {
     if (tableName === 'all')
         return Object.values(queries).map(value => value());
 
-    if (Object.keys(queries).includes(tableName))
+    if (Object.keys(queries).includes(tableName)) {
+
+        if (tableName === 'roles')
+            return [queries[tableName](), queries['fillRoles']()];
+
         return queries[tableName]();
+
+    }
 
     return null
 
