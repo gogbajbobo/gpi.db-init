@@ -58,7 +58,8 @@ function dropTableQuery(tableName) {
     const tables = [
         'users_roles',
         'roles',
-        'users'
+        'users',
+        'orders'
     ];
 
     if (tableName === 'all')
@@ -73,7 +74,8 @@ function createTableQuery(tableName) {
     const queries = {
         users: createUsersTableQuery,
         roles: createRolesTableQuery,
-        users_roles: createUsersRolesTableQuery
+        users_roles: createUsersRolesTableQuery,
+        orders: createOrdersTableQuery
     };
 
     if (tableName === 'all')
@@ -140,6 +142,20 @@ function createUsersRolesTableQuery() {
             .references('id')
             .inTable('users')
             .onDelete('CASCADE');
+
+        polishTable(table);
+
+    })
+
+}
+
+function createOrdersTableQuery() {
+
+    return knex.schema.createTable('orders', table => {
+
+        table.increments('id');
+        table.string('ordername').unique();
+        table.boolean('approved').defaultTo(false);
 
         polishTable(table);
 
