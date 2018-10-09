@@ -41,7 +41,7 @@ if (!process.argv[2]) {
 
     dropTableQueries.forEach(queryChaining);
     createTableQueries.forEach(queryChaining);
-    
+
     queriesPromise
         .then(() => log.info('tables created'))
         .catch(err => log.error(err.message))
@@ -161,6 +161,12 @@ function createOrdersTableQuery() {
         table.increments('id');
         table.string('ordername').unique();
         table.boolean('approved').defaultTo(false);
+        table.integer('user_id')
+            .unsigned()
+            .notNullable()
+            .references('id')
+            .inTable('users')
+            .onDelete('CASCADE');
 
         polishTable(table);
 
